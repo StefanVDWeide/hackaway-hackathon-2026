@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 
 import sqlalchemy as sa
-from sqlalchemy import Column, ForeignKey, Index, String, Table, Text
+from sqlalchemy import Column, Computed, ForeignKey, Index, String, Table, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import TypeDecorator
 
@@ -78,7 +78,14 @@ class Listing(TimestampMixin, Base):
 
     # --- Search ---
     # Full-text search vector — populated by a PostgreSQL trigger (see migrations).
-    search_vector: Mapped[str | None] = mapped_column(TSVectorType(), nullable=True)
+    search_vector: Mapped[str | None] = mapped_column(
+        TSVectorType(),
+        Computed(
+            "setweight(to_tsvector('english', coalesce(title, '')), 'A') || "
+            "setweight(to_tsvector('english', coalesce(description, '')), 'B')",
+        ),
+        nullable=True,
+    )
     # Semantic search: embedding vector (1536 dims — OpenAI ada-002 / similar)
     embedding: Mapped[list[float] | None] = mapped_column(VectorType(1536))
 
