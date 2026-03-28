@@ -1,10 +1,10 @@
 """Central model registry — import this module to ensure all models are loaded."""
 
 from app.common.models.base import Base, TimestampMixin
-from app.modules.users.models import User, Wallet
-from app.modules.listings.models import Category, Listing, listing_categories
-from app.modules.negotiations.models import Bid, Conversation, Message
-from app.modules.transactions.models import Transaction
+from app.common.models.user import User, Wallet
+from app.common.models.listing import Category, Listing, listing_categories
+from app.common.models.negotiation import Bid, Conversation, Message
+from app.common.models.transaction import Transaction
 
 __all__ = [
     "Base",

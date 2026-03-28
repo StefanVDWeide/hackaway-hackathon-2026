@@ -7,9 +7,9 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.common.types.negotiations import ActorType, BidStatus, BidType
-from app.modules.negotiations.models import Bid, Conversation, Message
-from app.modules.listings.models import Listing
-from app.modules.users.models import User
+from app.common.models.negotiation import Bid, Conversation, Message
+from app.common.models.listing import Listing
+from app.common.models.user import User
 
 pytest_plugins = ["tests.domain_conftest"]
 

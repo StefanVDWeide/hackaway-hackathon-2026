@@ -5,7 +5,7 @@ import uuid
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.modules.users.models import User, Wallet
+from app.common.models.user import User, Wallet
 
 # Pull in domain fixtures
 pytest_plugins = ["tests.domain_conftest"]

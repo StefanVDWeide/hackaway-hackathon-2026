@@ -8,10 +8,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.common.types.negotiations import BidStatus, BidType
 from app.common.types.transactions import TransactionStatus
-from app.modules.negotiations.models import Bid
-from app.modules.transactions.models import Transaction
-from app.modules.users.models import User, Wallet
-from app.modules.listings.models import Listing
+from app.common.models.negotiation import Bid
+from app.common.models.transaction import Transaction
+from app.common.models.user import User, Wallet
+from app.common.models.listing import Listing
 
 pytest_plugins = ["tests.domain_conftest"]
 

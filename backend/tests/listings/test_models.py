@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.common.types.listings import Condition, ListingStatus
-from app.modules.listings.models import Category, Listing
+from app.common.models.listing import Category, Listing
 
 pytest_plugins = ["tests.domain_conftest"]
 
@@ -58,7 +58,7 @@ async def test_listing_category_association(
     await session.flush()
 
     # Use raw SQL insert into association table to avoid lazy-load in async
-    from app.modules.listings.models import listing_categories
+    from app.common.models.listing import listing_categories
     await session.execute(
         listing_categories.insert().values(
             listing_id=sample_listing.id, category_id=cat.id,
