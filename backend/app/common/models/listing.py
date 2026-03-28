@@ -26,7 +26,7 @@ class TSVectorType(TypeDecorator):
 
 
 class VectorType(TypeDecorator):
-    """pgvector Vector on PostgreSQL, TEXT on other dialects."""
+    """pgvector Vector on PostgreSQL, JSON-serialized TEXT on other dialects."""
 
     impl = sa.Text
     cache_ok = True
@@ -41,6 +41,20 @@ class VectorType(TypeDecorator):
 
             return dialect.type_descriptor(Vector(self.dim))
         return dialect.type_descriptor(sa.Text())
+
+    def process_bind_param(self, value, dialect):
+        if value is not None and dialect.name != "postgresql":
+            import json
+
+            return json.dumps(value)
+        return value
+
+    def process_result_value(self, value, dialect):
+        if value is not None and dialect.name != "postgresql":
+            import json
+
+            return json.loads(value)
+        return value
 
 
 listing_categories = Table(
@@ -81,6 +95,10 @@ class Listing(TimestampMixin, Base):
     )
     bids: Mapped[list["Bid"]] = relationship(back_populates="listing")
     conversations: Mapped[list["Conversation"]] = relationship(back_populates="listing")
+
+    @property
+    def seller_display_name(self) -> str:
+        return self.seller.display_name
 
 
 class Category(TimestampMixin, Base):

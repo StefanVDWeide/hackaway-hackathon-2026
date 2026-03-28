@@ -7,7 +7,7 @@ from pydantic import BaseModel, ConfigDict
 class BaseSchema(BaseModel):
     """Base schema with shared Pydantic config."""
 
-    model_config = ConfigDict(from_attributes=True, strict=True, extra="forbid")
+    model_config = ConfigDict(from_attributes=True, extra="forbid")
 
 
 class CreateSchema(BaseSchema):

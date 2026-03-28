@@ -136,6 +136,7 @@ async def create_listing(
             )
         await session.flush()
 
+    await session.refresh(listing)
     await session.refresh(listing, attribute_names=["categories", "seller"])
     return listing
 
@@ -164,6 +165,7 @@ async def update_listing(
             )
 
     await session.flush()
+    await session.refresh(listing)
     await session.refresh(listing, attribute_names=["categories", "seller"])
     return listing
 
@@ -191,6 +193,7 @@ async def publish_listing(
         raise ValueError("Only DRAFT listings can be published")
     listing.status = ListingStatus.ACTIVE
     await session.flush()
+    await session.refresh(listing)
     await session.refresh(listing, attribute_names=["categories", "seller"])
     return listing
 
@@ -203,6 +206,7 @@ async def archive_listing(
         raise ValueError("Only ACTIVE listings can be archived")
     listing.status = ListingStatus.ARCHIVED
     await session.flush()
+    await session.refresh(listing)
     await session.refresh(listing, attribute_names=["categories", "seller"])
     return listing
 
