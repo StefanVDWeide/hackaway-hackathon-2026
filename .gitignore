@@ -3,6 +3,7 @@
 
 ### macOS ###
 # General
+postgres-data/
 .DS_Store
 .AppleDouble
 .LSOverride
