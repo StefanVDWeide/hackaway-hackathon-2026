@@ -16,6 +16,8 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     jwt_expiration_minutes: int = 60
 
+    openai_api_key: str = ""
+
     @property
     def database_url(self) -> str:
         return (
