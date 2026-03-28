@@ -78,7 +78,7 @@ function handleAccepted(transactionId: string) {
 </script>
 
 <template>
-  <div class="h-[calc(100vh-8rem)] flex flex-col space-y-0 -m-6">
+  <div class="h-[calc(100vh-8rem)] flex flex-col space-y-0 -mx-4 -my-6">
     <!-- Header -->
     <div class="px-6 py-4 border-b flex items-center gap-4 shrink-0">
       <Button variant="ghost" size="sm" as-child>
