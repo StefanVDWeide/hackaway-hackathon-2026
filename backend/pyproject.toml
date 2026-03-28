@@ -11,6 +11,8 @@ dependencies = [
     "pydantic>=2.0",
     "pydantic-settings>=2.0",
     "fastapi-mcp>=0.4.0",
+    "alembic>=1.15",
+    "pgvector>=0.4",
 ]
 
 [project.optional-dependencies]
