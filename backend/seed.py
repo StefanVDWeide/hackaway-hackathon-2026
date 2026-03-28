@@ -28,6 +28,7 @@ from app.common.models.user import User, Wallet
 from app.common.types.listings import Condition, ListingStatus
 from app.common.types.negotiations import ActorType, BidStatus, BidType
 from app.common.types.transactions import TransactionStatus
+from app.integrations.embeddings import generate_embedding
 from app.modules.users.service import hash_password
 
 # ---------------------------------------------------------------------------
@@ -164,6 +165,7 @@ async def seed():
         # ----- Listings -----
         listings: list[Listing] = []
         for seller_email, title, desc, price, condition, status, cat_slugs in LISTINGS:
+            embedding = await generate_embedding(f"{title}\n{desc}")
             listing = Listing(
                 seller_id=users[seller_email].id,
                 title=title,
@@ -171,6 +173,7 @@ async def seed():
                 price=price,
                 condition=condition,
                 status=status,
+                embedding=embedding,
             )
             session.add(listing)
             await session.flush()

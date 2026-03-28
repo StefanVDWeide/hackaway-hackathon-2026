@@ -56,6 +56,18 @@ class VectorType(TypeDecorator):
             return json.loads(value)
         return value
 
+    class comparator_factory(TypeDecorator.Comparator):  # type: ignore[type-arg]
+        """Forward pgvector distance methods to the dialect-level Vector type."""
+
+        def cosine_distance(self, other):
+            return self.op("<=>", return_type=sa.Float)(other)
+
+        def l2_distance(self, other):
+            return self.op("<->", return_type=sa.Float)(other)
+
+        def max_inner_product(self, other):
+            return self.op("<#>", return_type=sa.Float)(other)
+
 
 listing_categories = Table(
     "listing_categories",
