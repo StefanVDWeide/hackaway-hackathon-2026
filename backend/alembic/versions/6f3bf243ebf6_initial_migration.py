@@ -189,9 +189,6 @@ def upgrade() -> None:
         sa.Column("listing_id", sa.Uuid(), nullable=False),
         sa.Column("bidder_id", sa.Uuid(), nullable=False),
         sa.Column("amount", sa.Integer(), nullable=False),
-        sa.Column("pickup_latitude", sa.Float(), nullable=False),
-        sa.Column("pickup_longitude", sa.Float(), nullable=False),
-        sa.Column("pickup_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column(
             "status",
             sa.Enum(
@@ -348,9 +345,6 @@ def upgrade() -> None:
         sa.Column("buyer_id", sa.Uuid(), nullable=False),
         sa.Column("seller_id", sa.Uuid(), nullable=False),
         sa.Column("amount", sa.Integer(), nullable=False),
-        sa.Column("pickup_latitude", sa.Float(), nullable=False),
-        sa.Column("pickup_longitude", sa.Float(), nullable=False),
-        sa.Column("pickup_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column(
             "status",
             sa.Enum(

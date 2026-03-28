@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, Text, UniqueConstraint
+from sqlalchemy import ForeignKey, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.common.models.base import Base, TimestampMixin
@@ -26,7 +25,8 @@ class Message(TimestampMixin, Base):
     __tablename__ = "messages"
 
     conversation_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("conversations.id"), index=True,
+        ForeignKey("conversations.id"),
+        index=True,
     )
     actor_type: Mapped[ActorType]
     sender_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"))
@@ -44,9 +44,6 @@ class Bid(TimestampMixin, Base):
     listing_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("listings.id"), index=True)
     bidder_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), index=True)
     amount: Mapped[int]
-    pickup_latitude: Mapped[float]
-    pickup_longitude: Mapped[float]
-    pickup_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     status: Mapped[BidStatus] = mapped_column(default=BidStatus.PENDING)
     bid_type: Mapped[BidType]
     parent_bid_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("bids.id"))

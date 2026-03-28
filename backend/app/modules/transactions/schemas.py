@@ -10,9 +10,6 @@ class TransactionRead(ReadSchema):
     buyer_id: uuid.UUID
     seller_id: uuid.UUID
     amount: int
-    pickup_latitude: float
-    pickup_longitude: float
-    pickup_at: datetime
     status: TransactionStatus
     escrowed_at: datetime | None
     released_at: datetime | None

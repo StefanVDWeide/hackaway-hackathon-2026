@@ -1,5 +1,4 @@
 import uuid
-from datetime import datetime
 
 from pydantic import Field
 
@@ -10,25 +9,16 @@ from app.common.types.negotiations import ActorType, BidStatus, BidType
 class BidCreate(CreateSchema):
     listing_id: uuid.UUID
     amount: int = Field(gt=0)
-    pickup_latitude: float
-    pickup_longitude: float
-    pickup_at: datetime
 
 
 class CounterBidCreate(CreateSchema):
     amount: int = Field(gt=0)
-    pickup_latitude: float
-    pickup_longitude: float
-    pickup_at: datetime
 
 
 class BidRead(ReadSchema):
     listing_id: uuid.UUID
     bidder_id: uuid.UUID
     amount: int
-    pickup_latitude: float
-    pickup_longitude: float
-    pickup_at: datetime
     status: BidStatus
     bid_type: BidType
     parent_bid_id: uuid.UUID | None

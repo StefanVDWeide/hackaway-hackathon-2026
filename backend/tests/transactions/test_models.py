@@ -17,16 +17,14 @@ pytest_plugins = ["tests.domain_conftest"]
 
 
 async def _create_accepted_bid(
-    session: AsyncSession, listing: Listing, buyer: User,
+    session: AsyncSession,
+    listing: Listing,
+    buyer: User,
 ) -> Bid:
-    pickup_time = datetime(2026, 4, 15, 14, 0, tzinfo=timezone.utc)
     bid = Bid(
         listing_id=listing.id,
         bidder_id=buyer.id,
         amount=200,
-        pickup_latitude=52.20,
-        pickup_longitude=5.00,
-        pickup_at=pickup_time,
         bid_type=BidType.BUYER,
         status=BidStatus.ACCEPTED,
     )
@@ -48,9 +46,6 @@ async def test_transaction_creation(
         buyer_id=sample_buyer.id,
         seller_id=sample_user.id,
         amount=bid.amount,
-        pickup_latitude=bid.pickup_latitude,
-        pickup_longitude=bid.pickup_longitude,
-        pickup_at=bid.pickup_at,
     )
     session.add(txn)
     await session.flush()
@@ -77,9 +72,6 @@ async def test_escrow_flow(
         buyer_id=sample_buyer.id,
         seller_id=sample_user.id,
         amount=bid.amount,
-        pickup_latitude=bid.pickup_latitude,
-        pickup_longitude=bid.pickup_longitude,
-        pickup_at=bid.pickup_at,
     )
     session.add(txn)
     await session.flush()
@@ -126,9 +118,6 @@ async def test_refund_flow(
         buyer_id=sample_buyer.id,
         seller_id=sample_user.id,
         amount=bid.amount,
-        pickup_latitude=bid.pickup_latitude,
-        pickup_longitude=bid.pickup_longitude,
-        pickup_at=bid.pickup_at,
     )
     session.add(txn)
     await session.flush()
@@ -169,9 +158,6 @@ async def test_one_transaction_per_bid(
         buyer_id=sample_buyer.id,
         seller_id=sample_user.id,
         amount=200,
-        pickup_latitude=52.20,
-        pickup_longitude=5.00,
-        pickup_at=bid.pickup_at,
     )
     session.add(txn1)
     await session.flush()
@@ -181,9 +167,6 @@ async def test_one_transaction_per_bid(
         buyer_id=sample_buyer.id,
         seller_id=sample_user.id,
         amount=200,
-        pickup_latitude=52.20,
-        pickup_longitude=5.00,
-        pickup_at=bid.pickup_at,
     )
     session.add(txn2)
     with pytest.raises(IntegrityError):

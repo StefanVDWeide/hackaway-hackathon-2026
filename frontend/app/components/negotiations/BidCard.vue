@@ -80,8 +80,6 @@ async function reject() {
     </div>
 
     <div class="text-sm text-muted-foreground space-y-0.5">
-      <p>Pickup: {{ formatDate(bid.pickup_at) }}</p>
-      <p>Location: {{ bid.pickup_latitude.toFixed(4) }}, {{ bid.pickup_longitude.toFixed(4) }}</p>
       <p class="text-xs">{{ bid.bid_type === 'buyer' ? 'Buyer offer' : 'Seller counter' }} · {{ formatDate(bid.created_at) }}</p>
     </div>
 

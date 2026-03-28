@@ -1,7 +1,6 @@
 """Tests for transaction service — escrow lifecycle."""
 
 import uuid
-from datetime import datetime, timezone
 
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -22,8 +21,6 @@ from app.modules.transactions.service import (
 )
 
 pytest_plugins = ["tests.domain_conftest"]
-
-PICKUP_AT = datetime(2026, 4, 15, 10, 0, tzinfo=timezone.utc)
 
 
 @pytest.fixture
@@ -48,9 +45,6 @@ async def transaction_setup(
     bid_data = BidCreate(
         listing_id=sample_listing.id,
         amount=200,
-        pickup_latitude=52.37,
-        pickup_longitude=4.89,
-        pickup_at=PICKUP_AT,
     )
     bid = await place_bid(session, sample_buyer.id, bid_data)
     txn = await accept_bid(session, sample_user.id, bid.id)
@@ -92,9 +86,6 @@ async def test_fund_escrow_insufficient_balance(
     bid_data = BidCreate(
         listing_id=sample_listing.id,
         amount=200,
-        pickup_latitude=52.0,
-        pickup_longitude=4.0,
-        pickup_at=PICKUP_AT,
     )
     bid = await place_bid(session, sample_buyer.id, bid_data)
     txn = await accept_bid(session, sample_user.id, bid.id)
@@ -264,9 +255,7 @@ async def test_get_transaction(
     assert txn.id == transaction_setup.id
 
 
-async def test_get_transaction_not_found(
-    session: AsyncSession, sample_buyer: User
-):
+async def test_get_transaction_not_found(session: AsyncSession, sample_buyer: User):
     with pytest.raises(ValueError, match="not found"):
         await get_transaction(session, sample_buyer.id, uuid.uuid4())
 

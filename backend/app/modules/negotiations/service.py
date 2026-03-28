@@ -55,9 +55,7 @@ async def list_conversations(
     stmt = (
         select(Conversation)
         .join(Listing, Listing.id == Conversation.listing_id)
-        .where(
-            (Conversation.buyer_id == user_id) | (Listing.seller_id == user_id)
-        )
+        .where((Conversation.buyer_id == user_id) | (Listing.seller_id == user_id))
         .order_by(Conversation.created_at.desc())
         .offset(offset)
         .limit(limit)
@@ -110,9 +108,7 @@ async def send_message(
 # ---------------------------------------------------------------------------
 
 
-async def place_bid(
-    session: AsyncSession, buyer_id: uuid.UUID, data: BidCreate
-) -> Bid:
+async def place_bid(session: AsyncSession, buyer_id: uuid.UUID, data: BidCreate) -> Bid:
     listing = await session.get(Listing, data.listing_id)
     if not listing:
         raise ValueError("Listing not found")
@@ -136,9 +132,6 @@ async def place_bid(
         listing_id=data.listing_id,
         bidder_id=buyer_id,
         amount=data.amount,
-        pickup_latitude=data.pickup_latitude,
-        pickup_longitude=data.pickup_longitude,
-        pickup_at=data.pickup_at,
         bid_type=BidType.BUYER,
         status=BidStatus.PENDING,
     )
@@ -192,9 +185,6 @@ async def counter_bid(
         listing_id=original.listing_id,
         bidder_id=user_id,
         amount=data.amount,
-        pickup_latitude=data.pickup_latitude,
-        pickup_longitude=data.pickup_longitude,
-        pickup_at=data.pickup_at,
         bid_type=new_bid_type,
         status=BidStatus.PENDING,
         parent_bid_id=original.id,
@@ -256,9 +246,6 @@ async def accept_bid(
         buyer_id=buyer_id,
         seller_id=listing.seller_id,
         amount=bid.amount,
-        pickup_latitude=bid.pickup_latitude,
-        pickup_longitude=bid.pickup_longitude,
-        pickup_at=bid.pickup_at,
         status=TransactionStatus.PENDING_ESCROW,
     )
     session.add(txn)
@@ -326,9 +313,7 @@ async def list_bids_for_listing(
         raise PermissionError("You do not own this listing")
 
     stmt = (
-        select(Bid)
-        .where(Bid.listing_id == listing_id)
-        .order_by(Bid.created_at.desc())
+        select(Bid).where(Bid.listing_id == listing_id).order_by(Bid.created_at.desc())
     )
     result = await session.execute(stmt)
     return list(result.scalars().all())
