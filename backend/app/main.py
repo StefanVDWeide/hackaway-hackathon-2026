@@ -22,6 +22,11 @@ mcp = FastApiMCP(app)
 mcp.mount()
 
 
+from app.modules.users.router import router as users_router
+
+app.include_router(users_router)
+
+
 @app.get("/health")
 async def health() -> dict[str, str]:
     return {"status": "ok"}

@@ -12,6 +12,10 @@ class Settings(BaseSettings):
     db_max_overflow: int = 20
     db_echo: bool = False
 
+    jwt_secret: str = "change-me-in-production"
+    jwt_algorithm: str = "HS256"
+    jwt_expiration_minutes: int = 60
+
     @property
     def database_url(self) -> str:
         return (

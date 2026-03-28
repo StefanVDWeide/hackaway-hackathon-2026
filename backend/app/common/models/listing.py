@@ -2,13 +2,45 @@ from __future__ import annotations
 
 import uuid
 
-from pgvector.sqlalchemy import Vector
-from sqlalchemy import Column, Computed, ForeignKey, Index, String, Table, Text
-from sqlalchemy.dialects.postgresql import TSVECTOR
+import sqlalchemy as sa
+from sqlalchemy import Column, ForeignKey, Index, String, Table, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.types import TypeDecorator
 
 from app.common.models.base import Base, TimestampMixin
 from app.common.types.listings import Condition, ListingStatus
+
+
+class TSVectorType(TypeDecorator):
+    """TSVECTOR on PostgreSQL, TEXT on other dialects."""
+
+    impl = sa.Text
+    cache_ok = True
+
+    def load_dialect_impl(self, dialect):
+        if dialect.name == "postgresql":
+            from sqlalchemy.dialects.postgresql import TSVECTOR
+
+            return dialect.type_descriptor(TSVECTOR())
+        return dialect.type_descriptor(sa.Text())
+
+
+class VectorType(TypeDecorator):
+    """pgvector Vector on PostgreSQL, TEXT on other dialects."""
+
+    impl = sa.Text
+    cache_ok = True
+
+    def __init__(self, dim: int | None = None):
+        super().__init__()
+        self.dim = dim
+
+    def load_dialect_impl(self, dialect):
+        if dialect.name == "postgresql":
+            from pgvector.sqlalchemy import Vector
+
+            return dialect.type_descriptor(Vector(self.dim))
+        return dialect.type_descriptor(sa.Text())
 
 
 listing_categories = Table(
@@ -31,17 +63,10 @@ class Listing(TimestampMixin, Base):
     image_url: Mapped[str | None] = mapped_column(String(500))
 
     # --- Search ---
-    # Full-text search: auto-generated tsvector from title (weight A) + description (weight B)
-    search_vector: Mapped[str | None] = mapped_column(
-        TSVECTOR,
-        Computed(
-            "setweight(to_tsvector('english', coalesce(title, '')), 'A') || "
-            "setweight(to_tsvector('english', coalesce(description, '')), 'B')",
-            persisted=True,
-        ),
-    )
+    # Full-text search vector — populated by a PostgreSQL trigger (see migrations).
+    search_vector: Mapped[str | None] = mapped_column(TSVectorType(), nullable=True)
     # Semantic search: embedding vector (1536 dims — OpenAI ada-002 / similar)
-    embedding: Mapped[list[float] | None] = mapped_column(Vector(1536))
+    embedding: Mapped[list[float] | None] = mapped_column(VectorType(1536))
 
     __table_args__ = (
         Index("ix_listings_search_vector", "search_vector", postgresql_using="gin"),

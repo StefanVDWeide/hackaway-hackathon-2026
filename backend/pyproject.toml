@@ -13,6 +13,8 @@ dependencies = [
     "fastapi-mcp>=0.4.0",
     "alembic>=1.15",
     "pgvector>=0.4",
+    "passlib[bcrypt]>=1.7",
+    "pyjwt>=2.0",
 ]
 
 [project.optional-dependencies]
