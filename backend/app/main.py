@@ -1,3 +1,4 @@
+from fastapi_mcp import FastApiMCP
 from contextlib import asynccontextmanager
 from collections.abc import AsyncGenerator
 
@@ -17,6 +18,8 @@ app = FastAPI(
     version="0.1.0",
     lifespan=lifespan,
 )
+mcp = FastApiMCP(app)
+mcp.mount()
 
 
 @app.get("/health")
