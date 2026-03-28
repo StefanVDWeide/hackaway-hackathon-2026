@@ -25,10 +25,14 @@ mcp.mount()
 from app.modules.users.router import router as users_router
 from app.modules.listings.router import router as listings_router
 from app.modules.categories.router import router as categories_router
+from app.modules.negotiations.router import router as negotiations_router
+from app.modules.transactions.router import router as transactions_router
 
 app.include_router(users_router)
 app.include_router(listings_router)
 app.include_router(categories_router)
+app.include_router(negotiations_router)
+app.include_router(transactions_router)
 
 
 @app.get("/health")
