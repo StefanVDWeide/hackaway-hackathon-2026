@@ -44,16 +44,5 @@ app.include_router(transactions_router)
 async def health() -> dict[str, str]:
     return {"status": "ok"}
 
-mcp = FastApiMCP(app)
+mcp = FastApiMCP(app, exclude_tags=["auth"])
 mcp.mount_http()
-
-# Patch the HTTP transport to use stateless mode so MCP clients
-# can call tools without a session initialization handshake.
-_original_ensure = mcp._http_transport._ensure_session_manager_started
-
-async def _ensure_stateless():
-    await _original_ensure()
-    if mcp._http_transport._session_manager:
-        mcp._http_transport._session_manager._stateless = True
-
-mcp._http_transport._ensure_session_manager_started = _ensure_stateless

@@ -31,7 +31,7 @@ async def get_current_user_id(token: str = Depends(oauth2_scheme)) -> uuid.UUID:
         )
 
 
-@router.post("/register", response_model=UserRead, status_code=status.HTTP_201_CREATED)
+@router.post("/register", response_model=UserRead, status_code=status.HTTP_201_CREATED, tags=["auth"])
 async def register(data: UserRegister, session: AsyncSession = Depends(get_session)):
     try:
         user = await register_user(session, data)
@@ -40,7 +40,7 @@ async def register(data: UserRegister, session: AsyncSession = Depends(get_sessi
     return user
 
 
-@router.post("/login", response_model=TokenResponse)
+@router.post("/login", response_model=TokenResponse, tags=["auth"])
 async def login(data: UserLogin, session: AsyncSession = Depends(get_session)):
     try:
         user = await authenticate_user(session, data.email, data.password)
