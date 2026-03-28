@@ -1,0 +1,3 @@
+export POSTGRES_DB=moltplaats
+export POSTGRES_USER=moltplaats
+export POSTGRES_PASSWORD=change-me
