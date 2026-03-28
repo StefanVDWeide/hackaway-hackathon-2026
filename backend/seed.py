@@ -14,7 +14,6 @@ Creates:
 """
 
 import asyncio
-import uuid
 from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import select
@@ -89,7 +88,7 @@ CATEGORIES = [
     {"name": "Home & Garden", "slug": "home-garden"},
 ]
 
-# (seller_email, title, description, price_cents, condition, status, category_slugs)
+# (seller_email, title, description, price_cents, condition, status, image, category_slugs)
 LISTINGS = [
     # Seller Agent listings
     (
@@ -99,6 +98,7 @@ LISTINGS = [
         650_00,
         Condition.LIKE_NEW,
         ListingStatus.ACTIVE,
+        "https://mobico.nl/wp-content/uploads/2025/03/refurbished-iphone-14-pro-dieppaars-1.jpg",
         ["electronics"],
     ),
     (
@@ -108,6 +108,7 @@ LISTINGS = [
         45_00,
         Condition.GOOD,
         ListingStatus.ACTIVE,
+        "https://www.ikea.com/nl/en/images/products/kallax-shelving-unit-white__1051325_pe845148_s5.jpg?f=xxs",
         ["furniture", "home-garden"],
     ),
     (
@@ -117,6 +118,7 @@ LISTINGS = [
         180_00,
         Condition.LIKE_NEW,
         ListingStatus.ACTIVE,
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRw0EDkC7ChnW0MeAQ3kmub61kFZA1igl73Vg&s",
         ["electronics"],
     ),
     (
@@ -126,6 +128,7 @@ LISTINGS = [
         10_00,
         Condition.NEW,
         ListingStatus.DRAFT,
+        None,
         ["electronics"],
     ),
     # Alice listings
@@ -136,6 +139,7 @@ LISTINGS = [
         85_00,
         Condition.GOOD,
         ListingStatus.ACTIVE,
+        "https://gthic.com/cdn/shop/files/black_vintage_street_style_zipper_leather_jacket_gthic_4_73f9e61b-c706-400d-90a8-661cc1b8957b_1024x.jpg?v=1742432273",
         ["clothing"],
     ),
     (
@@ -145,6 +149,7 @@ LISTINGS = [
         55_00,
         Condition.FAIR,
         ListingStatus.ACTIVE,
+        "https://m.media-amazon.com/images/I/816m9xtqsML._AC_UF894,1000_QL80_.jpg",
         ["books"],
     ),
     (
@@ -154,6 +159,7 @@ LISTINGS = [
         40_00,
         Condition.GOOD,
         ListingStatus.ACTIVE,
+        "https://bodybow.nl/wp-content/uploads/2024/11/b01d-121b-4008-994b-dac034a995cb.jpg",
         ["sports-outdoors"],
     ),
     # Bob listings
@@ -164,6 +170,7 @@ LISTINGS = [
         450_00,
         Condition.GOOD,
         ListingStatus.ACTIVE,
+        "https://scholtenswerkplek.nl/wp-content/smush-webp/2024/04/AeronGraphite02.png.webp",
         ["furniture"],
     ),
     (
@@ -173,6 +180,7 @@ LISTINGS = [
         280_00,
         Condition.LIKE_NEW,
         ListingStatus.ACTIVE,
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2BP3Vfrr_Nrw20ZMyOwT_b4fZJ5CeIkYZVw&s",
         ["electronics"],
     ),
     (
@@ -182,6 +190,7 @@ LISTINGS = [
         35_00,
         Condition.LIKE_NEW,
         ListingStatus.ACTIVE,
+        "https://m.media-amazon.com/images/I/91qFY3-tD9L.jpg",
         ["home-garden"],
     ),
     # Charlie listings
@@ -192,6 +201,7 @@ LISTINGS = [
         620_00,
         Condition.LIKE_NEW,
         ListingStatus.ACTIVE,
+        "https://hips.hearstapps.com/hmg-prod/images/trek-marlin-7-0486-tested-1574279934.jpg?crop=0.889xw:1.00xh;0.0561xw,0&resize=768:*",
         ["sports-outdoors"],
     ),
     (
@@ -201,6 +211,7 @@ LISTINGS = [
         320_00,
         Condition.GOOD,
         ListingStatus.ACTIVE,
+        "https://image.springbeetle.com/cdn-cgi/image/dpr=1,format=webp/https://staticprod.site.flexispot.com/dev/trantor/attachments/E7S1-800.jpg",
         ["furniture"],
     ),
 ]
@@ -257,7 +268,16 @@ async def seed():
 
         # ----- Listings -----
         listings: list[Listing] = []
-        for seller_email, title, desc, price, condition, status, cat_slugs in LISTINGS:
+        for (
+            seller_email,
+            title,
+            desc,
+            price,
+            condition,
+            status,
+            image_url,
+            cat_slugs,
+        ) in LISTINGS:
             embedding = await generate_embedding(f"{title}\n{desc}")
             listing = Listing(
                 seller_id=users[seller_email].id,
@@ -266,6 +286,7 @@ async def seed():
                 price=price,
                 condition=condition,
                 status=status,
+                image_url=image_url,
                 embedding=embedding,
             )
             session.add(listing)
