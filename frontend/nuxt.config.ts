@@ -3,7 +3,12 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
 
-  modules: ["@nuxt/eslint", "@nuxtjs/tailwindcss", "shadcn-nuxt", "@sidebase/nuxt-auth"],
+  modules: [
+    "@nuxt/eslint",
+    "@nuxtjs/tailwindcss",
+    "shadcn-nuxt",
+    "@sidebase/nuxt-auth",
+  ],
 
   runtimeConfig: {
     // Server-only: backend URL used by Nitro proxy + nuxt-auth
@@ -24,9 +29,9 @@ export default defineNuxtConfig({
     provider: {
       type: "local",
       endpoints: {
-        signIn: { path: "/api/users/login", method: "post" },
-        signUp: { path: "/api/users/register", method: "post" },
-        getSession: { path: "/api/users/me", method: "get" },
+        signIn: { path: "/users/login", method: "post" },
+        signUp: { path: "/users/register", method: "post" },
+        getSession: { path: "/users/me", method: "get" },
         signOut: false,
       },
       token: {

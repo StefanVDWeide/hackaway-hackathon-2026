@@ -108,6 +108,5 @@ function isActive(to: string) {
       </main>
     </div>
 
-    <Sonner />
   </div>
 </template>

@@ -114,6 +114,5 @@ async function handleSignOut() {
       Hackaway Market &copy; 2026
     </footer>
 
-    <Sonner />
   </div>
 </template>
