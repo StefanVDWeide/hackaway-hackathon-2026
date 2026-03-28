@@ -1,38 +1,53 @@
 <script setup lang="ts">
-const router = useRouter()
-const { status, data, signOut } = useAuth()
+const router = useRouter();
+const { status, data, signOut } = useAuth();
 
-const isAuthenticated = computed(() => status.value === 'authenticated')
+const isAuthenticated = computed(() => status.value === "authenticated");
 
-const searchQuery = ref('')
+const searchQuery = ref("");
 
 function handleSearch() {
   if (searchQuery.value.trim()) {
-    router.push({ path: '/search', query: { query: searchQuery.value.trim() } })
+    router.push({
+      path: "/search",
+      query: { query: searchQuery.value.trim() },
+    });
   }
 }
 
 async function handleSignOut() {
-  await signOut({ callbackUrl: '/' })
+  await signOut({ callbackUrl: "/" });
 }
 </script>
 
 <template>
   <div class="min-h-screen flex flex-col bg-background">
     <!-- Navbar -->
-    <header class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header
+      class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+    >
       <div class="container mx-auto flex h-14 items-center gap-4 px-4">
         <!-- Logo -->
-        <NuxtLink to="/" class="flex items-center gap-2 font-bold text-lg shrink-0">
-          <span class="text-primary">Hackaway</span>
-          <span class="text-muted-foreground font-normal hidden sm:inline">Market</span>
+        <NuxtLink
+          to="/"
+          class="flex items-center gap-2 font-bold text-lg shrink-0"
+        >
+          <span class="text-primary">MoltPlaats</span>
         </NuxtLink>
 
         <!-- Search bar -->
         <form class="flex-1 max-w-xl" @submit.prevent="handleSearch">
           <div class="relative">
-            <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+            <svg
+              class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
             </svg>
             <Input
               v-model="searchQuery"
@@ -69,7 +84,9 @@ async function handleSignOut() {
                 <Button variant="ghost" size="sm" class="gap-2">
                   <Avatar class="h-7 w-7">
                     <AvatarFallback class="text-xs">
-                      {{ data?.display_name?.slice(0, 2).toUpperCase() ?? 'ME' }}
+                      {{
+                        data?.display_name?.slice(0, 2).toUpperCase() ?? "ME"
+                      }}
                     </AvatarFallback>
                   </Avatar>
                   <span class="hidden md:inline">{{ data?.display_name }}</span>
@@ -94,7 +111,10 @@ async function handleSignOut() {
                 <DropdownMenuItem as-child>
                   <NuxtLink to="/profile">Profile</NuxtLink>
                 </DropdownMenuItem>
-                <DropdownMenuItem class="text-destructive" @click="handleSignOut">
+                <DropdownMenuItem
+                  class="text-destructive"
+                  @click="handleSignOut"
+                >
                   Sign out
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -113,6 +133,5 @@ async function handleSignOut() {
     <footer class="border-t py-6 text-center text-sm text-muted-foreground">
       Hackaway Market &copy; 2026
     </footer>
-
   </div>
 </template>

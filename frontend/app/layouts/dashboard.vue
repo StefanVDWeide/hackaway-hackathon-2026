@@ -49,8 +49,7 @@ function isActive(to: string) {
     <header class="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
       <div class="container mx-auto flex h-14 items-center gap-4 px-4">
         <NuxtLink to="/" class="font-bold text-lg">
-          <span class="text-primary">Hackaway</span>
-          <span class="text-muted-foreground font-normal"> Market</span>
+          <span class="text-primary">MoltPlaats</span>
         </NuxtLink>
         <div class="ml-auto flex items-center gap-2">
           <span class="text-sm text-muted-foreground hidden sm:inline">{{
