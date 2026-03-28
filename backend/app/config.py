@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     jwt_expiration_minutes: int = 10080  # 1 week
 
-    openai_api_key: str = ""
+    openai_api_key: str
 
     @property
     def database_url(self) -> str:
@@ -28,4 +28,4 @@ class Settings(BaseSettings):
     model_config = {"env_file": ".env", "extra": "ignore"}
 
 
-settings = Settings()
+settings = Settings()  # type: ignore
