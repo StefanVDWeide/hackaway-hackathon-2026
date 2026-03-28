@@ -1,7 +1,6 @@
 """Tests for Conversation, Message, and Bid models."""
 
 import uuid
-from datetime import datetime, timezone
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,7 +14,9 @@ pytest_plugins = ["tests.domain_conftest"]
 
 
 async def test_conversation_creation(
-    session: AsyncSession, sample_listing: Listing, sample_buyer: User,
+    session: AsyncSession,
+    sample_listing: Listing,
+    sample_buyer: User,
 ) -> None:
     convo = Conversation(listing_id=sample_listing.id, buyer_id=sample_buyer.id)
     session.add(convo)
@@ -25,7 +26,9 @@ async def test_conversation_creation(
 
 
 async def test_conversation_unique_per_buyer_listing(
-    session: AsyncSession, sample_listing: Listing, sample_buyer: User,
+    session: AsyncSession,
+    sample_listing: Listing,
+    sample_buyer: User,
 ) -> None:
     import pytest
     from sqlalchemy.exc import IntegrityError
@@ -41,7 +44,9 @@ async def test_conversation_unique_per_buyer_listing(
 
 
 async def test_message_from_user(
-    session: AsyncSession, sample_listing: Listing, sample_buyer: User,
+    session: AsyncSession,
+    sample_listing: Listing,
+    sample_buyer: User,
 ) -> None:
     convo = Conversation(listing_id=sample_listing.id, buyer_id=sample_buyer.id)
     session.add(convo)
@@ -61,7 +66,9 @@ async def test_message_from_user(
 
 
 async def test_message_from_agent(
-    session: AsyncSession, sample_listing: Listing, sample_buyer: User,
+    session: AsyncSession,
+    sample_listing: Listing,
+    sample_buyer: User,
 ) -> None:
     convo = Conversation(listing_id=sample_listing.id, buyer_id=sample_buyer.id)
     session.add(convo)
@@ -81,16 +88,14 @@ async def test_message_from_agent(
 
 
 async def test_bid_creation(
-    session: AsyncSession, sample_listing: Listing, sample_buyer: User,
+    session: AsyncSession,
+    sample_listing: Listing,
+    sample_buyer: User,
 ) -> None:
-    pickup_time = datetime(2026, 4, 15, 14, 0, tzinfo=timezone.utc)
     bid = Bid(
         listing_id=sample_listing.id,
         bidder_id=sample_buyer.id,
         amount=200,
-        pickup_latitude=52.20,
-        pickup_longitude=5.00,
-        pickup_at=pickup_time,
         bid_type=BidType.BUYER,
     )
     session.add(bid)
@@ -102,17 +107,15 @@ async def test_bid_creation(
 
 
 async def test_bid_counter_offer_chain(
-    session: AsyncSession, sample_listing: Listing, sample_user: User, sample_buyer: User,
+    session: AsyncSession,
+    sample_listing: Listing,
+    sample_user: User,
+    sample_buyer: User,
 ) -> None:
-    pickup_time = datetime(2026, 4, 15, 14, 0, tzinfo=timezone.utc)
-
     buyer_bid = Bid(
         listing_id=sample_listing.id,
         bidder_id=sample_buyer.id,
         amount=180,
-        pickup_latitude=52.20,
-        pickup_longitude=5.00,
-        pickup_at=pickup_time,
         bid_type=BidType.BUYER,
     )
     session.add(buyer_bid)
@@ -122,9 +125,6 @@ async def test_bid_counter_offer_chain(
         listing_id=sample_listing.id,
         bidder_id=sample_user.id,
         amount=220,
-        pickup_latitude=52.37,
-        pickup_longitude=4.89,
-        pickup_at=pickup_time,
         bid_type=BidType.SELLER,
         parent_bid_id=buyer_bid.id,
         status=BidStatus.COUNTERED,
@@ -137,17 +137,14 @@ async def test_bid_counter_offer_chain(
 
 
 async def test_message_references_bid(
-    session: AsyncSession, sample_listing: Listing, sample_buyer: User,
+    session: AsyncSession,
+    sample_listing: Listing,
+    sample_buyer: User,
 ) -> None:
-    pickup_time = datetime(2026, 4, 15, 14, 0, tzinfo=timezone.utc)
-
     bid = Bid(
         listing_id=sample_listing.id,
         bidder_id=sample_buyer.id,
         amount=200,
-        pickup_latitude=52.20,
-        pickup_longitude=5.00,
-        pickup_at=pickup_time,
         bid_type=BidType.BUYER,
     )
     session.add(bid)

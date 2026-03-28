@@ -17,9 +17,6 @@ const loading = ref(true)
 const showCounter = ref(false)
 const counterTargetBid = ref<BidRead | null>(null)
 const counterAmount = ref('')
-const counterLat = ref('')
-const counterLng = ref('')
-const counterAt = ref('')
 const counterLoading = ref(false)
 
 const sellerId = computed(() => listing.value?.seller_id)
@@ -46,9 +43,6 @@ function handleBidAction() {
 function openCounter(bid: BidRead) {
   counterTargetBid.value = bid
   counterAmount.value = String(bid.amount / 100)
-  counterLat.value = String(bid.pickup_latitude)
-  counterLng.value = String(bid.pickup_longitude)
-  counterAt.value = bid.pickup_at.slice(0, 16)
   showCounter.value = true
 }
 
@@ -58,9 +52,6 @@ async function submitCounter() {
   try {
     const body: CounterBidCreate = {
       amount: Math.round(parseFloat(counterAmount.value) * 100),
-      pickup_latitude: parseFloat(counterLat.value),
-      pickup_longitude: parseFloat(counterLng.value),
-      pickup_at: new Date(counterAt.value).toISOString(),
     }
     await apiFetch(`/api/negotiations/bids/${counterTargetBid.value.id}/counter`, { method: 'POST', body })
     toast.success('Counter offer sent!')
@@ -130,20 +121,6 @@ function handleAccepted(transactionId: string) {
           <div class="space-y-1.5">
             <Label>Counter amount (€)</Label>
             <Input v-model="counterAmount" type="number" min="0.01" step="0.01" />
-          </div>
-          <div class="grid grid-cols-2 gap-2">
-            <div class="space-y-1.5">
-              <Label>Pickup latitude</Label>
-              <Input v-model="counterLat" type="number" step="any" />
-            </div>
-            <div class="space-y-1.5">
-              <Label>Pickup longitude</Label>
-              <Input v-model="counterLng" type="number" step="any" />
-            </div>
-          </div>
-          <div class="space-y-1.5">
-            <Label>Pickup date & time</Label>
-            <Input v-model="counterAt" type="datetime-local" />
           </div>
         </div>
         <DialogFooter>

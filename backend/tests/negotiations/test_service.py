@@ -1,7 +1,6 @@
 """Tests for negotiation service — bids, counter-offers, conversations."""
 
 import uuid
-from datetime import datetime, timezone
 
 import pytest
 from sqlalchemy import select
@@ -29,16 +28,11 @@ from app.modules.negotiations.service import (
 
 pytest_plugins = ["tests.domain_conftest"]
 
-PICKUP_AT = datetime(2026, 4, 15, 10, 0, tzinfo=timezone.utc)
-
 
 def _bid_data(listing_id: uuid.UUID) -> BidCreate:
     return BidCreate(
         listing_id=listing_id,
         amount=200,
-        pickup_latitude=52.37,
-        pickup_longitude=4.89,
-        pickup_at=PICKUP_AT,
     )
 
 
@@ -125,13 +119,14 @@ async def test_place_bid_on_nonexistent_listing(
 
 
 async def test_seller_counters_buyer_bid(
-    session: AsyncSession, sample_listing: Listing, sample_buyer: User, sample_user: User
+    session: AsyncSession,
+    sample_listing: Listing,
+    sample_buyer: User,
+    sample_user: User,
 ):
     bid = await place_bid(session, sample_buyer.id, _bid_data(sample_listing.id))
 
-    counter_data = CounterBidCreate(
-        amount=180, pickup_latitude=52.0, pickup_longitude=4.0, pickup_at=PICKUP_AT
-    )
+    counter_data = CounterBidCreate(amount=180)
     counter = await counter_bid(session, sample_user.id, bid.id, counter_data)
 
     assert counter.amount == 180
@@ -145,45 +140,40 @@ async def test_seller_counters_buyer_bid(
 
 
 async def test_buyer_counters_seller_bid(
-    session: AsyncSession, sample_listing: Listing, sample_buyer: User, sample_user: User
+    session: AsyncSession,
+    sample_listing: Listing,
+    sample_buyer: User,
+    sample_user: User,
 ):
     bid = await place_bid(session, sample_buyer.id, _bid_data(sample_listing.id))
     seller_counter = await counter_bid(
         session,
         sample_user.id,
         bid.id,
-        CounterBidCreate(
-            amount=180, pickup_latitude=52.0, pickup_longitude=4.0, pickup_at=PICKUP_AT
-        ),
+        CounterBidCreate(amount=180),
     )
 
     buyer_counter = await counter_bid(
         session,
         sample_buyer.id,
         seller_counter.id,
-        CounterBidCreate(
-            amount=190, pickup_latitude=52.0, pickup_longitude=4.0, pickup_at=PICKUP_AT
-        ),
+        CounterBidCreate(amount=190),
     )
     assert buyer_counter.bid_type == BidType.BUYER
     assert buyer_counter.parent_bid_id == seller_counter.id
 
 
 async def test_counter_non_pending_bid_fails(
-    session: AsyncSession, sample_listing: Listing, sample_buyer: User, sample_user: User
+    session: AsyncSession,
+    sample_listing: Listing,
+    sample_buyer: User,
+    sample_user: User,
 ):
     bid = await place_bid(session, sample_buyer.id, _bid_data(sample_listing.id))
     await reject_bid(session, sample_user.id, bid.id)
 
     with pytest.raises(ValueError, match="pending"):
-        await counter_bid(
-            session,
-            sample_user.id,
-            bid.id,
-            CounterBidCreate(
-                amount=100, pickup_latitude=52.0, pickup_longitude=4.0, pickup_at=PICKUP_AT
-            ),
-        )
+        await counter_bid(session, sample_user.id, bid.id, CounterBidCreate(amount=100))
 
 
 async def test_counter_own_bid_type_fails(
@@ -194,12 +184,7 @@ async def test_counter_own_bid_type_fails(
 
     with pytest.raises(ValueError, match="counter seller bids"):
         await counter_bid(
-            session,
-            sample_buyer.id,
-            bid.id,
-            CounterBidCreate(
-                amount=100, pickup_latitude=52.0, pickup_longitude=4.0, pickup_at=PICKUP_AT
-            ),
+            session, sample_buyer.id, bid.id, CounterBidCreate(amount=100)
         )
 
 
@@ -215,14 +200,7 @@ async def test_counter_by_unrelated_user_fails(
     await session.flush()
 
     with pytest.raises(PermissionError, match="participant"):
-        await counter_bid(
-            session,
-            stranger.id,
-            bid.id,
-            CounterBidCreate(
-                amount=100, pickup_latitude=52.0, pickup_longitude=4.0, pickup_at=PICKUP_AT
-            ),
-        )
+        await counter_bid(session, stranger.id, bid.id, CounterBidCreate(amount=100))
 
 
 # ---------------------------------------------------------------------------
@@ -231,7 +209,10 @@ async def test_counter_by_unrelated_user_fails(
 
 
 async def test_accept_bid_creates_transaction(
-    session: AsyncSession, sample_listing: Listing, sample_buyer: User, sample_user: User
+    session: AsyncSession,
+    sample_listing: Listing,
+    sample_buyer: User,
+    sample_user: User,
 ):
     bid = await place_bid(session, sample_buyer.id, _bid_data(sample_listing.id))
     txn = await accept_bid(session, sample_user.id, bid.id)
@@ -268,7 +249,10 @@ async def test_accept_bid_rejects_others(
 
 
 async def test_accept_counter_offer(
-    session: AsyncSession, sample_listing: Listing, sample_buyer: User, sample_user: User
+    session: AsyncSession,
+    sample_listing: Listing,
+    sample_buyer: User,
+    sample_user: User,
 ):
     """Buyer accepts a seller counter-offer."""
     bid = await place_bid(session, sample_buyer.id, _bid_data(sample_listing.id))
@@ -276,9 +260,7 @@ async def test_accept_counter_offer(
         session,
         sample_user.id,
         bid.id,
-        CounterBidCreate(
-            amount=180, pickup_latitude=52.0, pickup_longitude=4.0, pickup_at=PICKUP_AT
-        ),
+        CounterBidCreate(amount=180),
     )
 
     txn = await accept_bid(session, sample_buyer.id, counter.id)
@@ -295,7 +277,10 @@ async def test_accept_own_bid_fails(
 
 
 async def test_accept_already_accepted_fails(
-    session: AsyncSession, sample_listing: Listing, sample_buyer: User, sample_user: User
+    session: AsyncSession,
+    sample_listing: Listing,
+    sample_buyer: User,
+    sample_user: User,
 ):
     bid = await place_bid(session, sample_buyer.id, _bid_data(sample_listing.id))
     await accept_bid(session, sample_user.id, bid.id)
@@ -310,7 +295,10 @@ async def test_accept_already_accepted_fails(
 
 
 async def test_reject_bid(
-    session: AsyncSession, sample_listing: Listing, sample_buyer: User, sample_user: User
+    session: AsyncSession,
+    sample_listing: Listing,
+    sample_buyer: User,
+    sample_user: User,
 ):
     bid = await place_bid(session, sample_buyer.id, _bid_data(sample_listing.id))
     rejected = await reject_bid(session, sample_user.id, bid.id)
@@ -331,7 +319,10 @@ async def test_reject_own_bid_fails(
 
 
 async def test_send_message(
-    session: AsyncSession, sample_listing: Listing, sample_buyer: User, sample_user: User
+    session: AsyncSession,
+    sample_listing: Listing,
+    sample_buyer: User,
+    sample_user: User,
 ):
     # Place a bid to create the conversation
     await place_bid(session, sample_buyer.id, _bid_data(sample_listing.id))
@@ -349,7 +340,10 @@ async def test_send_message(
 
 
 async def test_send_message_seller(
-    session: AsyncSession, sample_listing: Listing, sample_buyer: User, sample_user: User
+    session: AsyncSession,
+    sample_listing: Listing,
+    sample_buyer: User,
+    sample_user: User,
 ):
     await place_bid(session, sample_buyer.id, _bid_data(sample_listing.id))
 
@@ -381,13 +375,14 @@ async def test_send_message_stranger_fails(
     await session.flush()
 
     with pytest.raises(PermissionError, match="participant"):
-        await send_message(
-            session, stranger.id, conv.id, MessageCreate(body="Hi!")
-        )
+        await send_message(session, stranger.id, conv.id, MessageCreate(body="Hi!"))
 
 
 async def test_list_conversations(
-    session: AsyncSession, sample_listing: Listing, sample_buyer: User, sample_user: User
+    session: AsyncSession,
+    sample_listing: Listing,
+    sample_buyer: User,
+    sample_user: User,
 ):
     await place_bid(session, sample_buyer.id, _bid_data(sample_listing.id))
 
@@ -401,7 +396,10 @@ async def test_list_conversations(
 
 
 async def test_get_conversation_with_messages(
-    session: AsyncSession, sample_listing: Listing, sample_buyer: User, sample_user: User
+    session: AsyncSession,
+    sample_listing: Listing,
+    sample_buyer: User,
+    sample_user: User,
 ):
     await place_bid(session, sample_buyer.id, _bid_data(sample_listing.id))
 
@@ -420,7 +418,10 @@ async def test_get_conversation_with_messages(
 
 
 async def test_list_bids_for_listing(
-    session: AsyncSession, sample_listing: Listing, sample_buyer: User, sample_user: User
+    session: AsyncSession,
+    sample_listing: Listing,
+    sample_buyer: User,
+    sample_user: User,
 ):
     await place_bid(session, sample_buyer.id, _bid_data(sample_listing.id))
     bids = await list_bids_for_listing(session, sample_user.id, sample_listing.id)

@@ -17,9 +17,6 @@ class Transaction(TimestampMixin, Base):
     buyer_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), index=True)
     seller_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), index=True)
     amount: Mapped[int]
-    pickup_latitude: Mapped[float]
-    pickup_longitude: Mapped[float]
-    pickup_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     status: Mapped[TransactionStatus] = mapped_column(
         default=TransactionStatus.PENDING_ESCROW,
     )

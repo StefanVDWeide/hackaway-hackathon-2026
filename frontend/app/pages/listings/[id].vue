@@ -16,11 +16,7 @@ const notFound = ref(false)
 // Bid form
 const showBidForm = ref(false)
 const bidAmount = ref('')
-const bidPickupLat = ref('')
-const bidPickupLng = ref('')
-const bidPickupAt = ref('')
 const bidLoading = ref(false)
-const geoLoading = ref(false)
 
 const isAuthenticated = computed(() => status.value === 'authenticated')
 const isOwner = computed(() => data.value?.id === listing.value?.seller_id)
@@ -50,17 +46,6 @@ onMounted(async () => {
   }
 })
 
-async function getMyLocation() {
-  geoLoading.value = true
-  try {
-    const pos = await new Promise<GeolocationPosition>((res, rej) => navigator.geolocation.getCurrentPosition(res, rej))
-    bidPickupLat.value = String(pos.coords.latitude)
-    bidPickupLng.value = String(pos.coords.longitude)
-  }
-  catch { toast.error('Could not get location') }
-  finally { geoLoading.value = false }
-}
-
 async function submitBid() {
   if (!listing.value) return
   bidLoading.value = true
@@ -68,9 +53,6 @@ async function submitBid() {
     const body: BidCreate = {
       listing_id: listing.value.id,
       amount: Math.round(parseFloat(bidAmount.value) * 100),
-      pickup_latitude: parseFloat(bidPickupLat.value),
-      pickup_longitude: parseFloat(bidPickupLng.value),
-      pickup_at: new Date(bidPickupAt.value).toISOString(),
     }
     await apiFetch('/api/negotiations/bids', { method: 'POST', body })
     toast.success('Bid placed! Check your negotiations.')
@@ -188,23 +170,6 @@ async function submitBid() {
             <div class="space-y-1.5">
               <Label>Offer amount (€)</Label>
               <Input v-model="bidAmount" type="number" min="0.01" step="0.01" placeholder="0.00" />
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-              <div class="space-y-1.5">
-                <Label>Pickup latitude</Label>
-                <Input v-model="bidPickupLat" type="number" step="any" placeholder="52.3676" />
-              </div>
-              <div class="space-y-1.5">
-                <Label>Pickup longitude</Label>
-                <Input v-model="bidPickupLng" type="number" step="any" placeholder="4.9041" />
-              </div>
-            </div>
-            <Button variant="outline" size="sm" :disabled="geoLoading" @click="getMyLocation">
-              {{ geoLoading ? 'Getting location...' : 'Use my location' }}
-            </Button>
-            <div class="space-y-1.5">
-              <Label>Pickup date & time</Label>
-              <Input v-model="bidPickupAt" type="datetime-local" />
             </div>
             <Button class="w-full" :disabled="bidLoading" @click="submitBid">
               {{ bidLoading ? 'Placing offer...' : 'Submit Offer' }}

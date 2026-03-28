@@ -98,9 +98,6 @@ export interface BidRead {
   listing_id: string
   bidder_id: string
   amount: number
-  pickup_latitude: number
-  pickup_longitude: number
-  pickup_at: string
   status: BidStatus
   bid_type: BidType
   parent_bid_id: string | null
@@ -109,16 +106,10 @@ export interface BidRead {
 export interface BidCreate {
   listing_id: string
   amount: number
-  pickup_latitude: number
-  pickup_longitude: number
-  pickup_at: string
 }
 
 export interface CounterBidCreate {
   amount: number
-  pickup_latitude: number
-  pickup_longitude: number
-  pickup_at: string
 }
 
 export interface MessageRead {
@@ -160,9 +151,6 @@ export interface TransactionRead {
   buyer_id: string
   seller_id: string
   amount: number
-  pickup_latitude: number
-  pickup_longitude: number
-  pickup_at: string
   status: TransactionStatus
   escrowed_at: string | null
   released_at: string | null
