@@ -34,5 +34,19 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  marketplace-frontend:
+    build:
+      context: ./frontend
+    environment:
+      NUXT_API_BASE_URL: http://marketplace-api:8000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - marketplace-api
+    restart: unless-stopped
+
 volumes:
   postgres_data:

@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@nuxt/eslint": "^1.15.2",
+    "@sidebase/nuxt-auth": "^1.2.0",
+    "@vueuse/core": "^14.2.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-vue-next": "^1.0.0",
@@ -19,7 +21,8 @@
     "shadcn-nuxt": "^2.4.3",
     "tailwind-merge": "^3.5.0",
     "vue": "^3.5.30",
-    "vue-router": "^5.0.4"
+    "vue-router": "^5.0.4",
+    "vue-sonner": "^2.0.9"
   },
   "devDependencies": {
     "@nuxtjs/tailwindcss": "^7.0.0-beta.1",
